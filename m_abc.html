@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MABC-2 · Hoja de Registro</title>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --salmon:#E8806A; --salmon-light:#F2B8A8; --salmon-pale:#FBE8E3;
+  --salmon-dark:#C05A42; --cream:#FDF8F5; --ww:#FEFCFB;
+  --td:#2C1810; --tm:#6B3A2A; --tl:#9E6B58; --br:#E0C5BB;
+  --platform-primary:#667eea; --platform-secondary:#764ba2;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px;}
+.container{max-width:900px;margin:0 auto;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden;}
+.header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:30px;text-align:center;}
+.header h1{font-size:28px;margin-bottom:10px;}
+.header .subtitle{font-size:12px;opacity:.9;letter-spacing:.05em;}
+.student-info{background:rgba(255,255,255,0.2);padding:15px;border-radius:10px;margin-top:15px;display:none;}
+.student-info.visible{display:block;}
+.student-info p{margin:5px 0;font-size:14px;}
+.content{padding:30px;}
+
+/* page content */
+.page{max-width:100%;}
+
+/* header inside content (legacy) */
+.hdr{text-align:center;margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--br);}
+.hdr small{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--tl);display:block;margin-bottom:3px;}
+.hdr h1{font-size:20px;font-weight:300;} .hdr h1 b{color:var(--salmon-dark);}
+
+/* form block (datos identificación + fechas) – estilo bloque tipo plataforma */
+.form-block{margin-bottom:30px;border:2px solid #e0e0e0;border-radius:15px;overflow:hidden;}
+.form-block-title{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:15px 20px;font-size:18px;font-weight:bold;}
+.form-block .form-grid{padding:20px;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+.form-col{display:flex;flex-direction:column;gap:8px;}
+.form-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.form-row label{min-width:180px;font-size:12px;color:var(--tm);}
+.form-row input[type="text"]{flex:1;min-width:160px;font-size:13px;padding:5px 8px;border:1px solid var(--br);border-radius:5px;background:var(--cream);outline:none;}
+.form-row input[type="text"]:focus{border-color:var(--salmon);}
+.form-row input[type="text"][readonly],.form-row input[type="number"][readonly]{background:#e9ecef;color:#495057;cursor:default;}
+.date-inline{display:flex;gap:6px;}
+.date-inline input{width:44px;font-family:'DM Mono',monospace;font-size:12px;text-align:center;padding:4px 4px;border:1px solid var(--br);border-radius:5px;background:var(--cream);outline:none;}
+.date-inline input:focus{border-color:var(--salmon);}
+.date-inline input[placeholder="Año"],#fe_ano,#fn_ano{width:56px;}
+.opts{display:flex;gap:14px;flex-wrap:wrap;}
+.opt{font-size:12px;color:var(--tm);cursor:pointer;}
+.opt input{margin-right:4px;}
+@media(max-width:700px){.form-grid{grid-template-columns:1fr;}}
+
+/* age row – estilo bloque */
+.agebar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#f8f9fa;border:2px solid #e0e0e0;border-radius:15px;padding:15px 20px;margin-bottom:20px;border-left:4px solid #667eea;}
+.agebar label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#666;}
+.atag{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:#333;}
+
+/* two-column layout */
+.layout{display:grid;grid-template-columns:1fr 310px;gap:16px;align-items:start;}
+
+/* ======================================================
+   LEFT SIDE – the big conversion table
+   ====================================================== */
+.conv-wrap{background:var(--ww);border:2px solid var(--br);border-radius:10px;overflow:hidden;}
+.conv-title{background:var(--salmon-dark);color:#fff;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:6px 12px;}
+
+table.conv{width:100%;border-collapse:collapse;}
+table.conv thead th{
+  font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--tl);font-weight:400;padding:7px 8px;background:var(--salmon-pale);
+  border-bottom:2px solid var(--br);text-align:center;
+}
+table.conv thead th.th-prueba{text-align:left;}
+table.conv thead th.th-dim{width:58px;}
+table.conv thead th.th-pd{width:95px;}
+table.conv thead th.th-pe{width:90px;}
+
+/* dim group separator */
+table.conv tr.dim-sep td{
+  background:var(--salmon);color:#fff;
+  font-family:'DM Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;
+  padding:4px 10px;font-weight:500;
+}
+
+/* normal data rows */
+table.conv td{border-bottom:1px solid #F0E4DE;vertical-align:middle;padding:0;}
+table.conv tr.last-dim td{border-bottom:2px solid var(--br);}
+table.conv tr.data-row:hover td{background:rgba(232,128,106,.06);}
+
+/* combined result row */
+table.conv tr.comb-row td{background:var(--salmon-pale);border-bottom:1px solid var(--salmon-light);}
+table.conv tr.comb-row.last-dim td{border-bottom:2px solid var(--br);}
+.comb-hint{font-size:10px;color:var(--tl);font-style:italic;text-align:right;padding:4px 8px;}
+
+/* dim label */
+td.dim-lbl{
+  font-family:'DM Mono',monospace;font-size:10px;font-weight:500;color:var(--salmon-dark);
+  text-align:center;padding:6px 4px;background:var(--salmon-pale);border-right:1px solid var(--br);
+  vertical-align:middle;
+}
+td.dim-lbl sup{font-size:8px;color:var(--salmon);}
+
+/* prueba name */
+td.prueba{padding:6px 10px;vertical-align:middle;}
+.pname{font-size:12.5px;line-height:1.3;}
+.psub{font-size:11px;color:var(--tm);font-style:italic;}
+
+/* puntuación directa input */
+td.td-pd{text-align:center;border-left:1px solid var(--br);padding:4px 6px;vertical-align:middle;}
+input.ipd{
+  width:62px;text-align:center;font-family:'DM Mono',monospace;font-size:14px;font-weight:500;
+  color:var(--td);background:var(--ww);border:1.5px solid var(--br);border-radius:6px;
+  padding:4px 4px;outline:none;display:block;margin:0 auto;transition:border-color .2s;
+}
+input.ipd:focus{border-color:var(--salmon);box-shadow:0 0 0 2px rgba(232,128,106,.18);}
+input.ipd[readonly]{background:var(--salmon-pale);color:var(--salmon-dark);border-color:var(--salmon-light);}
+
+/* puntuación escalar oval */
+td.td-pe{text-align:center;border-left:1px solid var(--br);padding:4px 6px;vertical-align:middle;}
+.oval{
+  width:46px;height:32px;border-radius:50%;border:2px solid var(--br);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:13px;font-weight:500;
+  color:var(--tl);background:#fff;margin:0 auto;transition:all .3s;
+}
+.oval.has-val{border-color:var(--salmon);background:var(--salmon-pale);color:var(--td);}
+.oval.is-comb{width:50px;height:36px;font-size:15px;}
+.oval.is-comb.has-val{background:var(--salmon-light);border-color:var(--salmon-dark);}
+
+/* ======================================================
+   RIGHT SIDE – summary cards
+   ====================================================== */
+.cards-title{font-size:13px;font-weight:600;color:var(--td);margin:0 0 10px 0;padding-bottom:6px;}
+.cards{display:flex;flex-direction:column;gap:12px;}
+
+.dim-card{background:var(--ww);border:1.5px solid var(--br);border-radius:10px;overflow:hidden;}
+.dim-card-hdr{padding:7px 12px;border-bottom:1px solid var(--br);display:flex;align-items:baseline;justify-content:space-between;}
+.dim-card-hdr h3{font-size:13.5px;font-weight:400;}
+.dim-card-hdr .formula{font-family:'DM Mono',monospace;font-size:8px;color:var(--tl);}
+.dim-card-body{display:grid;grid-template-columns:1fr 1fr 1fr;}
+.dcell{padding:10px 6px;text-align:center;border-right:1px solid var(--br);}
+.dcell:last-child{border-right:none;}
+.dcell label{display:block;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.09em;text-transform:uppercase;color:var(--tl);margin-bottom:5px;}
+
+/* dim sum – editable field */
+.dim-sum{
+  font-family:'DM Mono',monospace;font-size:22px;font-weight:500;
+  color:var(--td);background:var(--cream);border:1.5px solid var(--br);border-radius:6px;
+  padding:3px 5px;text-align:center;width:70px;margin:0 auto;display:block;outline:none;
+  transition:border-color .2s;
+}
+.dim-sum:focus{border-color:var(--salmon);}
+.dim-sum.auto{background:var(--salmon-pale);color:var(--salmon-dark);border-color:var(--salmon-light);}
+
+/* summary oval */
+.sum-oval{
+  width:54px;height:38px;border-radius:50%;border:2px solid var(--br);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:17px;font-weight:500;
+  color:var(--tl);background:#fff;margin:0 auto;transition:all .3s;
+}
+.sum-oval.has-val{border-color:var(--salmon);background:var(--salmon-pale);color:var(--td);}
+
+/* percentil box */
+.pc{
+  font-family:'DM Mono',monospace;font-size:22px;font-weight:500;
+  color:var(--td);background:var(--cream);border:1.5px solid var(--br);border-radius:6px;
+  padding:3px 5px;text-align:center;width:70px;margin:0 auto;display:block;
+}
+.pc.has-val{background:var(--salmon-pale);color:var(--salmon-dark);border-color:var(--salmon-light);}
+
+/* total card */
+.total-card{background:var(--salmon-dark);border-radius:10px;overflow:hidden;color:#fff;}
+.total-card-hdr{padding:7px 12px;border-bottom:1px solid rgba(255,255,255,.2);}
+.total-card-hdr h3{font-size:13px;font-weight:400;opacity:.9;}
+.total-card-hdr p{font-family:'DM Mono',monospace;font-size:7.5px;opacity:.5;letter-spacing:.08em;margin-top:2px;}
+.total-body{display:grid;grid-template-columns:1fr 1fr 1fr;}
+.tcell{padding:10px 6px;text-align:center;border-right:1px solid rgba(255,255,255,.15);}
+.tcell:last-child{border-right:none;}
+.tcell label{display:block;font-family:'DM Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin-bottom:5px;}
+.tv{font-family:'DM Mono',monospace;font-size:21px;font-weight:500;color:#fff;
+  background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);
+  border-radius:6px;width:70px;padding:3px 5px;text-align:center;margin:0 auto;display:block;}
+.t-oval{width:52px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.35);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:#fff;
+  background:rgba(255,255,255,.12);margin:0 auto;transition:all .3s;}
+.t-oval.has-val{background:rgba(255,255,255,.28);border-color:#fff;}
+
+/* notes */
+.notes{background:var(--ww);border:1px solid var(--br);border-radius:8px;padding:9px 13px;margin-top:12px;}
+.notes p{font-size:10.5px;color:var(--tl);line-height:1.65;font-style:italic;}
+.notes p+p{margin-top:3px;}
+.star{color:var(--salmon-dark);font-style:normal;}
+
+/* buttons */
+.btns{display:flex;justify-content:center;gap:8px;margin-top:12px;}
+.btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;
+  border:none;border-radius:5px;padding:7px 18px;cursor:pointer;font-weight:500;transition:all .18s;}
+.btn-sec{background:transparent;color:var(--tl);border:1px solid var(--br);}
+.btn-sec:hover{border-color:var(--salmon);color:var(--salmon-dark);}
+.btn-exp{background:var(--tm);color:#fff;}
+.btn-exp:hover{background:var(--td);}
+
+@keyframes pop{0%{transform:scale(.82);opacity:.3}60%{transform:scale(1.07)}100%{transform:scale(1);opacity:1}}
+.pop{animation:pop .32s ease-out;}
+@media(max-width:820px){.layout{grid-template-columns:1fr;}}
+
+.error-message{background:#f8d7da;color:#721c24;padding:15px;border-radius:10px;margin:20px 0;border-left:4px solid #f5c6cb;}
+.success-message{background:#d4edda;color:#155724;padding:15px;border-radius:10px;margin:20px 0;border-left:4px solid #c3e6cb;text-align:center;}
+</style>
+</head>
+<body>
+<div class="container" id="app">
+  <div class="header">
+    <h1>MABC-2 · Hoja de Registro</h1>
+    <p class="subtitle">Batería de Evaluación del Movimiento para Niños — Segunda Edición</p>
+    <div class="student-info" id="student-info">
+      <p><strong>Alumno/a:</strong> <span id="student-name">—</span></p>
+      <p><strong>Fecha:</strong> <span id="student-date">—</span></p>
+      <p><strong>Edad:</strong> <span id="student-age">—</span></p>
+    </div>
+  </div>
+
+  <div class="content">
+<div class="page">
+
+<!-- DATOS IDENTIFICACIÓN Y FECHAS (construidos desde mabc2_baremos.json → hoja_registro.preguntas) -->
+<section class="form-block">
+  <h2 class="form-block-title" id="rango-edad-title">Rango de edad</h2>
+  <div class="form-grid" id="form-grid-preguntas">
+    <div class="form-col" id="form-col-identificacion"></div>
+    <div class="form-col form-dates" id="form-col-fechas"></div>
+  </div>
+</section>
+
+<!-- AGE BAR (resumen de banda activa) -->
+<div class="agebar">
+  <label>Banda de edad:</label>
+  <div class="atag" id="atag">— Introduce la edad para cargar las pruebas —</div>
+</div>
+
+<div class="layout">
+
+  <!-- ── LEFT: CONVERSION TABLE ── -->
+  <div class="conv-wrap">
+    <div class="conv-title">Conversión de puntuación directa a escalar</div>
+    <table class="conv">
+      <thead>
+        <tr>
+          <th class="th-dim">Dim.</th>
+          <th class="th-prueba">Prueba</th>
+          <th class="th-pd">Punt. directa<br><span style="font-size:7px;font-weight:300">(mejor intento)</span></th>
+          <th class="th-pe">Punt. escalar</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="4" style="text-align:center;padding:28px 0;font-style:italic;color:var(--tl);font-size:13px;">
+          Introduce la edad del niño para cargar las pruebas
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── RIGHT: Puntuación de las tres dimensiones ── -->
+  <h2 class="cards-title">Puntuación de las tres dimensiones</h2>
+  <div class="cards">
+
+    <div class="dim-card" id="card-dm">
+      <div class="dim-card-hdr">
+        <h3>Destreza manual<sup style="color:var(--salmon)">^</sup></h3>
+        <span class="formula">DM1 + DM2 + DM3</span>
+      </div>
+      <div class="dim-card-body">
+        <div class="dcell">
+          <label>Punt. dim. DM</label>
+          <input class="dim-sum" id="sum_dm" type="number" readonly placeholder="—">
+        </div>
+        <div class="dcell">
+          <label>Punt. escalar</label>
+          <div class="sum-oval" id="sov_dm">—</div>
+        </div>
+        <div class="dcell">
+          <label>Percentil</label>
+          <div class="pc" id="pc_dm">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dim-card" id="card-pa">
+      <div class="dim-card-hdr">
+        <h3>Puntería y atrape<sup style="color:var(--salmon)">^</sup></h3>
+        <span class="formula">PA1 + PA2</span>
+      </div>
+      <div class="dim-card-body">
+        <div class="dcell">
+          <label>Punt. dim. PA</label>
+          <input class="dim-sum" id="sum_pa" type="number" readonly placeholder="—">
+        </div>
+        <div class="dcell">
+          <label>Punt. escalar</label>
+          <div class="sum-oval" id="sov_pa">—</div>
+        </div>
+        <div class="dcell">
+          <label>Percentil</label>
+          <div class="pc" id="pc_pa">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dim-card" id="card-e">
+      <div class="dim-card-hdr">
+        <h3>Equilibrio<sup style="color:var(--salmon)">^</sup></h3>
+        <span class="formula">E1 + E2 + E3</span>
+      </div>
+      <div class="dim-card-body">
+        <div class="dcell">
+          <label>Punt. dim. E</label>
+          <input class="dim-sum" id="sum_e" type="number" readonly placeholder="—">
+        </div>
+        <div class="dcell">
+          <label>Punt. escalar</label>
+          <div class="sum-oval" id="sov_e">—</div>
+        </div>
+        <div class="dcell">
+          <label>Percentil</label>
+          <div class="pc" id="pc_e">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="total-card">
+      <div class="total-card-hdr">
+        <h3>Puntuación Total</h3>
+        <p>Suma de las puntuaciones escalares de las 8 pruebas</p>
+      </div>
+      <div class="total-body">
+        <div class="tcell"><label>Punt. total</label><input class="tv" id="total_pts" readonly placeholder="—"></div>
+        <div class="tcell"><label>Punt. escalar</label><div class="t-oval" id="sov_total">—</div></div>
+        <div class="tcell"><label>Percentil</label><input class="tv" id="pc_total" readonly placeholder="—"></div>
+      </div>
+    </div>
+
+  </div>
+</div><!-- /layout -->
+
+<div class="notes">
+  <p><span class="star">*</span> Para las pruebas de dos extremidades: anotar la puntuación escalar de cada una en las casillas correspondientes, sumarlas y dividir entre dos. Si el resultado es superior a 10, redondear al alza; si inferior a 10, a la baja.</p>
+  <p><span class="star">^</span> Para cada dimensión, sumar las puntuaciones escalares de cada prueba. Para intervalos de confianza, consultar el capítulo 8 del Manual del examinador.</p>
+</div>
+<div class="btns">
+  <button class="btn btn-sec" onclick="resetAll()">Limpiar</button>
+  <button class="btn btn-exp" onclick="exportJSON()">Exportar JSON</button>
+</div>
+
+</div><!-- /page -->
+  </div><!-- /content -->
+</div><!-- /container -->
+<script>
+// ── PREGUNTAS HOJA REGISTRO (desde mabc2_baremos.json → hoja_registro.preguntas) ──
+const FALLBACK_PREGUNTAS=[
+  {id:'apellidos',label:'Apellidos:',tipo:'texto',columna:'identificacion'},
+  {id:'nombre',label:'Nombre:',tipo:'texto',columna:'identificacion'},
+  {id:'centro',label:'Centro (escuela, colegio):',tipo:'texto',columna:'identificacion'},
+  {id:'evaluado_por',label:'Evaluado por:',tipo:'texto',columna:'identificacion'},
+  {id:'sexo',label:'Sexo:',tipo:'radio',nombre:'sexo',opciones:[{valor:'varon',texto:'varón'},{valor:'mujer',texto:'mujer'}],columna:'identificacion'},
+  {id:'curso',label:'Curso:',tipo:'texto',columna:'identificacion'},
+  {id:'mano_preferida',label:'Mano preferida (para escribir):',tipo:'radio',nombre:'mano',opciones:[{valor:'derecha',texto:'derecha'},{valor:'izquierda',texto:'izquierda'}],columna:'identificacion'},
+  {id:'fecha_evaluacion',label:'Fecha de evaluación:',tipo:'fecha',ids:['fe_dia','fe_mes','fe_ano'],placeholders:['D','M','Año'],columna:'fechas'},
+  {id:'fecha_nacimiento',label:'Fecha de nacimiento:',tipo:'fecha',ids:['fn_dia','fn_mes','fn_ano'],placeholders:['D','M','Año'],columna:'fechas'},
+  {id:'edad_cronologica',label:'Edad cronológica:',tipo:'edad',ids:['ay','am'],placeholders:['Años','M'],columna:'fechas'},
+  {id:'lista_observacion_completada',label:'Lista de Observación Conductual ¿Completada?',tipo:'radio',nombre:'lista_obs',opciones:[{valor:'si',texto:'Sí'},{valor:'no',texto:'No'}],columna:'fechas'}
+];
+function buildFormFromPreguntas(preguntas){
+  const colId=document.getElementById('form-col-identificacion');
+  const colFe=document.getElementById('form-col-fechas');
+  if(!colId||!colFe)return;
+  colId.innerHTML=''; colFe.innerHTML='';
+  const byCol={identificacion:colId,fechas:colFe};
+  preguntas.forEach(p=>{
+    const col=byCol[p.columna]||colId;
+    const row=document.createElement('div'); row.className='form-row';
+    const lbl=document.createElement('label'); lbl.textContent=p.label;
+    row.appendChild(lbl);
+    if(p.tipo==='texto'){
+      const inp=document.createElement('input'); inp.type='text'; inp.id=p.id; inp.placeholder='—';
+      row.appendChild(inp);
+    }else if(p.tipo==='radio'){
+      const span=document.createElement('span'); span.className='opts';
+      (p.opciones||[]).forEach(opt=>{
+        const lab=document.createElement('label'); lab.className='opt';
+        const rad=document.createElement('input'); rad.type='radio'; rad.name=p.nombre||p.id; rad.value=opt.valor;
+        lab.appendChild(rad); lab.appendChild(document.createTextNode(' '+opt.texto)); span.appendChild(lab); span.appendChild(document.createTextNode(' '));
+      });
+      row.appendChild(span);
+    }else if(p.tipo==='fecha'||p.tipo==='edad'){
+      const span=document.createElement('span'); span.className='date-inline';
+      const ids=p.ids||[]; const ph=(p.placeholders||[]);
+      let mins,maxs;
+      if(p.tipo==='edad'){ mins=[4,0]; maxs=[16,11]; }
+      else{ mins=[1,1,1990]; maxs=[31,12,2030]; if(ids[2]==='fe_ano')mins[2]=2000; }
+      ids.forEach((id,i)=>{
+        const inp=document.createElement('input'); inp.type='number'; inp.id=id;
+        inp.placeholder=ph[i]||''; inp.min=mins[i]; inp.max=maxs[i];
+        if(p.tipo==='edad')inp.oninput=function(){onAge();};
+        span.appendChild(inp);
+      });
+      row.appendChild(span);
+    }
+    col.appendChild(row);
+  });
+}
+var PREGUNTAS_CARGADAS=null;
+function loadPreguntasFromJSON(){
+  fetch('mabc2_baremos.json').then(r=>r.json()).then(data=>{
+    if(data.tabla1_por_edad) applyBaremasFromJson(data.tabla1_por_edad);
+    if(CG){ buildTable(); recalcAllFromInputs(); }
+    if(data.hoja_registro&&Array.isArray(data.hoja_registro.preguntas)){
+      PREGUNTAS_CARGADAS=data.hoja_registro.preguntas;
+      buildFormFromPreguntas(PREGUNTAS_CARGADAS);
+    }else{ PREGUNTAS_CARGADAS=null; buildFormFromPreguntas(FALLBACK_PREGUNTAS); }
+    setTimeout(applyPlatformContext,0);
+  }).catch(()=>{ PREGUNTAS_CARGADAS=null; buildFormFromPreguntas(FALLBACK_PREGUNTAS); setTimeout(applyPlatformContext,0); });
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+const PES=[19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1];
+function mktbl(rows){
+  return PES.map((pe,i)=>{
+    const r=rows[i];
+    return r ? {pe,mn:r[0],mx:r[1]} : {pe,mn:null,mx:null};
+  });
+}
+function lookup(tbl,raw){
+  if(raw===''||raw===null||isNaN(Number(raw)))return null;
+  const v=Number(raw);
+  for(const r of tbl){
+    if(r.mn===null&&r.mx===null)continue;
+    if(r.mn===null){ if(v<=r.mx)return r.pe; continue; }
+    if(r.mx===null){ if(v>=r.mn)return r.pe; continue; }
+    if(v>=r.mn&&v<=r.mx)return r.pe;
+  }
+  return null;
+}
+function combRound(v){ return v===10?10:v>10?Math.ceil(v):Math.floor(v); }
+
+// Convertir una fila del JSON (objeto "1".."19" → [min,max]) al formato mktbl
+function jsonRowToMktbl(obj){
+  if(!obj||typeof obj!=='object')return null;
+  const rows=PES.map(pe=>{
+    const v=obj[String(pe)];
+    return Array.isArray(v)?v:null;
+  });
+  return mktbl(rows);
+}
+
+// Mapeo B key → clave en tabla1_por_edad del JSON
+function bKeyToJsonBand(gk){
+  if(!gk)return null;
+  if(gk==='4_0')return '4_0-4_5';
+  if(gk==='4_6')return '4_6-4_11';
+  const y=gk.split('_')[0];
+  return gk+'-'+y+'_11';
+}
+
+// Aplicar baremos del JSON al objeto B (sobrescribe las tablas .t / .sA.t / .sB.t)
+function applyBaremasFromJson(tabla1){
+  if(!tabla1||typeof tabla1!=='object')return;
+  const bKeys=['4_0','4_6','5_0','6_0','7_0','8_0','9_0','10_0','11_0','12_0','13_0','14_0','15_0','16_0'];
+  bKeys.forEach(gk=>{
+    const bandData=tabla1[bKeyToJsonBand(gk)];
+    if(!bandData||!B[gk])return;
+    const keys=Object.keys(bandData).filter(k=>!k.startsWith('_'));
+    // Asignación explícita por prefijo (JSON → B)
+    const setT=(item,key)=>{ if(key&&bandData[key])item.t=jsonRowToMktbl(bandData[key]); };
+    const setDual=(item,keyA,keyB)=>{ if(keyA&&bandData[keyA])item.sA.t=jsonRowToMktbl(bandData[keyA]); if(keyB&&bandData[keyB])item.sB.t=jsonRowToMktbl(bandData[keyB]); };
+    B[gk].dm.forEach(it=>{
+      if(it.dual) setDual(it, keys.find(k=>k==='DM1_mano_preferida'), keys.find(k=>k==='DM1_mano_no_preferida'));
+      else if(it.id==='DM2') setT(it, keys.find(k=>k.startsWith('DM2_')));
+      else if(it.id==='DM3') setT(it, keys.find(k=>k.startsWith('DM3_')));
+    });
+    B[gk].pa.forEach(it=>{
+      if(it.id==='PA1') setT(it, keys.find(k=>k.startsWith('PA1_')));
+      else if(it.id==='PA2') setT(it, keys.find(k=>k.startsWith('PA2_')));
+      else if(it.id==='PA3') setT(it, keys.find(k=>k.startsWith('PA3_')));
+    });
+    B[gk].e.forEach(it=>{
+      if(it.dual){
+        if(it.id==='E1') setDual(it, keys.find(k=>k.includes('E1_mejor')), keys.find(k=>k.includes('E1_otra')));
+        else if(it.id==='E3') setDual(it, keys.find(k=>k.startsWith('E3_')&&k.includes('mejor')), keys.find(k=>k.startsWith('E3_')&&k.includes('otra')));
+      } else {
+        if(it.id==='E2') setT(it, keys.find(k=>k.startsWith('E2_')));
+        else if(it.id==='E3') setT(it, keys.find(k=>k==='E3_saltar_alfombrillas')||keys.find(k=>k.startsWith('E3_')&&!k.includes('mejor')&&!k.includes('otra')));
+      }
+    });
+  });
+}
+
+// ── TABLA 2 (dimensiones) ──────────────────────────────────────────────────
+const T2=[
+  {pe:19,dm:[48,null],pa:[34,null],e:[45,null],pc:99.9},
+  {pe:18,dm:[46,47],  pa:[32,33],  e:[43,44],  pc:99.5},
+  {pe:17,dm:[44,45],  pa:[31,31],  e:[41,42],  pc:99},
+  {pe:16,dm:[41,43],  pa:[29,30],  e:[39,40],  pc:98},
+  {pe:15,dm:[40,40],  pa:[27,28],  e:[38,38],  pc:95},
+  {pe:14,dm:[37,39],  pa:[26,26],  e:[36,37],  pc:91},
+  {pe:13,dm:[35,36],  pa:[24,25],  e:[35,35],  pc:84},
+  {pe:12,dm:[33,34],  pa:[23,23],  e:[33,34],  pc:75},
+  {pe:11,dm:[31,32],  pa:[21,22],  e:[31,32],  pc:63},
+  {pe:10,dm:[29,30],  pa:[20,20],  e:[30,30],  pc:50},
+  {pe:9, dm:[27,28],  pa:[18,19],  e:[28,29],  pc:37},
+  {pe:8, dm:[25,26],  pa:[16,17],  e:[27,27],  pc:25},
+  {pe:7, dm:[23,24],  pa:[15,15],  e:[25,26],  pc:16},
+  {pe:6, dm:[21,22],  pa:[13,14],  e:[23,24],  pc:9},
+  {pe:5, dm:[18,20],  pa:[11,12],  e:[21,22],  pc:5},
+  {pe:4, dm:[16,17],  pa:[10,10],  e:[20,20],  pc:2},
+  {pe:3, dm:[15,15],  pa:[9,9],    e:[19,19],  pc:1},
+  {pe:2, dm:[12,14],  pa:[6,8],    e:[16,18],  pc:0.5},
+  {pe:1, dm:[null,11],pa:[null,5], e:[null,15],pc:0.1}
+];
+function lookupT2(sum,dim){
+  for(const r of T2){
+    const[mn,mx]=r[dim];
+    const ok=mn===null?sum<=mx:mx===null?sum>=mn:sum>=mn&&sum<=mx;
+    if(ok)return{pe:r.pe,pc:r.pc};
+  }return null;
+}
+
+// ── TABLA 3A (total) ───────────────────────────────────────────────────────
+const T3A=[
+  {pe:19,mn:112,mx:null,pc:99.9},{pe:18,mn:108,mx:110,pc:99.5},
+  {pe:17,mn:105,mx:107,pc:99},  {pe:16,mn:100,mx:104,pc:98},
+  {pe:15,mn:97, mx:99, pc:95},  {pe:14,mn:93, mx:96, pc:91},
+  {pe:13,mn:89, mx:92, pc:84},  {pe:12,mn:85, mx:88, pc:75},
+  {pe:11,mn:82, mx:84, pc:63},  {pe:10,mn:78, mx:81, pc:50},
+  {pe:9, mn:74, mx:77, pc:37},  {pe:8, mn:70, mx:73, pc:25},
+  {pe:7, mn:66, mx:69, pc:16},  {pe:6, mn:63, mx:65, pc:9},
+  {pe:5, mn:58, mx:62, pc:5},   {pe:4, mn:55, mx:57, pc:2},
+  {pe:3, mn:53, mx:54, pc:1},   {pe:2, mn:47, mx:52, pc:0.5},
+  {pe:1, mn:null,mx:46,pc:0.1}
+];
+function lookupT3(total){
+  for(const r of T3A){
+    const ok=r.mn===null?total<=r.mx:r.mx===null?total>=r.mn:total>=r.mn&&total<=r.mx;
+    if(ok)return{pe:r.pe,pc:r.pc};
+  }return null;
+}
+
+// ── BAREMOS TABLA 1 ────────────────────────────────────────────────────────
+const B={
+ '4_0':{lbl:'4:0–4:5',dm:[
+   {id:'DM1',name:'Introducir monedas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,null,[6,null],null,[9,9],[10,11],[12,13],[16,18],[14,15],[19,20],[18,18],[20,22],[22,25],null,[25,28],[29,null]])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,null,null,[8,8],[9,9],[10,11],[12,15],[14,14],[16,18],[18,19],[20,22],[22,25],null,[25,28],[29,null]])}},
+   {id:'DM2',name:'Enhebrar cuentas',     t:mktbl([null,null,null,null,null,null,[48,null],[30,47],[21,29],[18,20],[13,17],[10,12],[8,9],[6,7],[5,5],[4,4],[3,3],[2,2],[null,1]])},
+   {id:'DM3',name:'Dibujar el trazado',   t:mktbl([null,null,null,null,null,null,null,null,[9,null],[6,8],[4,5],[3,3],[2,2],[1,1],[0,0],null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar el saquito',   t:mktbl([null,null,null,null,null,null,[10,null],[8,9],[6,7],[4,5],[3,3],[2,2],null,[1,1],[0,0],null,null,null,null])},
+   {id:'PA2',name:'Lanzar saquito a diana',t:mktbl([null,null,null,null,null,null,null,null,[9,null],[6,8],[4,5],[3,3],[2,2],[1,1],[0,0],null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio una pierna',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,[25,27],[21,22],[18,19],[14,16],[11,13],[9,10],[6,8],[5,5],[3,4],[1,2],[0,0],null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,null,[25,27],[21,22],[18,19],[14,16],[11,13],[9,10],[6,8],[5,5],[3,4],[1,2],[0,0],null])}},
+   {id:'E2',name:'Andar de puntillas',    t:mktbl([null,null,null,null,null,null,null,null,null,null,[25,27],[20,24],[15,19],[11,14],[9,10],[6,8],[3,5],[1,2],[null,0]])},
+   {id:'E3',name:'Saltar alfombrillas',   t:mktbl([null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,[3,null],[1,2],[0,0],null])}]},
+
+ '4_6':{lbl:'4:6–4:11',dm:[
+   {id:'DM1',name:'Introducir monedas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,null,[6,null],null,[9,9],[10,11],[12,13],[14,16],[17,18],[19,21],[21,22],[22,24],[24,27],null,[27,null],null])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,null,null,null,[9,9],[10,11],[12,15],[14,16],[19,21],[19,21],[22,24],[24,27],null,[27,null],null])}},
+   {id:'DM2',name:'Enhebrar cuentas',     t:mktbl([null,null,null,null,null,null,[23,null],[19,22],[17,18],[14,16],[11,13],[9,10],[7,8],[5,6],[4,4],[3,3],[2,2],[1,1],[null,0]])},
+   {id:'DM3',name:'Dibujar el trazado',   t:mktbl([null,null,null,null,null,null,null,null,[10,null],[7,9],[5,6],[4,4],[3,3],[1,2],[0,0],null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar el saquito',    t:mktbl([null,null,null,null,null,null,[10,null],[8,9],[7,7],[5,6],[4,4],[3,3],[1,2],[0,0],null,null,null,null,null])},
+   {id:'PA2',name:'Lanzar saquito a diana',t:mktbl([null,null,null,null,null,null,null,null,[9,null],[7,8],[5,6],[4,4],[2,3],[1,1],[0,0],null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio una pierna',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,[27,29],[22,26],[19,21],[15,18],[12,14],[8,11],[6,7],[5,5],[3,4],[1,2],[0,0],null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,null,[27,29],[22,26],[19,21],[15,18],[12,14],[8,11],[6,7],[5,5],[3,4],[1,2],[0,0],null])}},
+   {id:'E2',name:'Andar de puntillas',    t:mktbl([null,null,null,null,null,null,null,null,null,null,[25,27],[20,24],[15,19],[11,14],[9,10],[6,8],[3,5],[1,2],[null,0]])},
+   {id:'E3',name:'Saltar alfombrillas',   t:mktbl([null,null,null,null,null,null,null,null,null,null,null,null,null,null,[3,null],[1,2],[0,0],null,null])}]},
+
+ '5_0':{lbl:'5:0–5:11',dm:[
+   {id:'DM1',name:'Introducir monedas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,[10,11],[9,10],[13,14],[14,15],[17,18],[19,20],[21,23],[24,26],[27,31],[32,35],[35,36],[36,40],[38,40],null,null])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,null,null,[14,15],[17,18],[20,21],[22,23],[25,27],[28,30],[31,33],[33,35],[35,37],[38,40],null,null])}},
+   {id:'DM2',name:'Enhebrar cuentas',     t:mktbl([null,null,null,null,null,[22,null],[18,21],[15,17],[14,14],[13,13],[10,12],[8,9],[6,7],[5,5],[4,4],[3,3],[2,2],[1,1],[null,0]])},
+   {id:'DM3',name:'Dibujar el trazado',   t:mktbl([null,null,null,null,null,null,null,[11,null],[9,10],[7,8],[5,6],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar el saquito',    t:mktbl([null,null,null,null,null,[10,null],[9,9],[8,8],[7,7],[6,6],[5,5],[4,4],[2,3],[1,1],[0,0],null,null,null,null])},
+   {id:'PA2',name:'Lanzar saquito a diana',t:mktbl([null,null,null,null,null,null,[5,null],[4,4],[4,4],[3,3],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio una pierna',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,[28,30],[22,26],[19,21],[14,16],[14,16],[8,11],[6,8],[5,5],[4,4],[1,2],[0,0],null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,[28,30],[22,26],[19,21],[14,16],[14,16],[8,11],[6,8],[5,5],[4,4],[1,2],[0,0],null,null,null])}},
+   {id:'E2',name:'Andar de puntillas',    t:mktbl([null,null,null,null,null,null,null,[71,75],[55,60],[45,49],[35,39],[28,31],[22,25],[17,21],[13,16],[9,12],[5,8],[1,4],[null,0]])},
+   {id:'E3',name:'Saltar alfombrillas',   t:mktbl([null,null,null,null,null,null,null,null,[5,null],[4,4],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null])}]},
+
+ '6_0':{lbl:'6:0–6:11',dm:[
+   {id:'DM1',name:'Introducir monedas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,[null,9],[10,10],[11,11],[12,13],[15,16],[17,18],[18,20],[20,22],[22,24],[24,27],[26,30],[28,32],[30,34],[32,36],[37,null]])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,null,[null,10],[11,11],[12,13],[15,16],[18,19],[20,22],[22,24],[24,27],[26,30],[28,32],[30,34],[32,36],[37,null]])}},
+   {id:'DM2',name:'Enhebrar cuentas',     t:mktbl([null,null,null,null,null,[20,23],[16,19],[13,15],[11,12],[9,10],[8,8],[7,7],[5,6],[4,4],[3,3],[2,2],[1,1],[0,0],null])},
+   {id:'DM3',name:'Dibujar el trazado',   t:mktbl([null,null,null,null,null,null,[4,null],[3,3],[2,2],[2,2],[1,1],[0,0],null,null,null,null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar el saquito',    t:mktbl([null,null,null,null,null,[10,null],[9,9],[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null])},
+   {id:'PA2',name:'Lanzar saquito a diana',t:mktbl([null,null,null,null,null,null,[5,null],[4,4],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio una pierna',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,[29,30],[23,28],[18,20],[14,17],[12,13],[8,11],[5,7],[4,4],[3,3],[1,2],[0,0],null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,[29,30],[23,28],[18,20],[14,17],[12,13],[8,11],[5,7],[4,4],[3,3],[1,2],[0,0],null,null,null])}},
+   {id:'E2',name:'Andar de puntillas',    t:mktbl([null,null,null,null,null,null,null,[28,31],[23,26],[18,22],[14,17],[11,13],[8,10],[5,7],[3,4],[1,2],[0,0],null,null])},
+   {id:'E3',name:'Saltar alfombrillas',   t:mktbl([null,null,null,null,null,null,null,[6,null],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}]},
+
+ '7_0':{lbl:'7:0–7:11',dm:[
+   {id:'DM1',name:'Insertar clavijas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,null,[null,18],[19,20],[21,22],[22,24],[25,26],[26,27],[28,31],[28,31],[32,34],[33,35],[36,37],[37,41],[42,46],[47,null]])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,null,[null,20],[21,22],[22,24],[25,26],[26,27],[28,31],[28,31],[32,34],[33,35],[36,37],[37,41],[42,46],[47,null]])}},
+   {id:'DM2',name:'Entretejer cordel',    t:mktbl([null,null,null,null,null,null,[28,null],[23,27],[19,22],[14,18],[10,13],[8,9],[6,7],[4,5],[2,3],[1,1],[0,0],null,null])},
+   {id:'DM3',name:'Dibujar al trazado',   t:mktbl([null,null,null,null,null,null,[4,null],[3,3],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar con dos manos', t:mktbl([null,null,null,null,null,null,[10,null],[9,9],[8,8],[7,7],[6,6],[5,5],[3,4],[2,2],[1,1],[0,0],null,null,null])},
+   {id:'PA2',name:'Lanzar saquito a diana',t:mktbl([null,null,null,null,null,null,[5,null],[4,4],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio soporte',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,[29,30],[24,28],[19,23],[14,16],[9,13],[6,8],[4,5],[2,3],[1,1],[0,0],null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,[29,30],[24,28],[19,23],[14,16],[9,13],[6,8],[4,5],[2,3],[1,1],[0,0],null,null,null])}},
+   {id:'E2',name:'Andar talón-punta',     t:mktbl([null,null,null,null,null,null,null,[29,30],[25,28],[20,24],[15,19],[11,14],[8,10],[5,7],[2,4],[1,1],[0,0],null,null])},
+   {id:'E3',name:'Saltar pata coja',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,null,null,[4,null],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,null,null,null,[4,null],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}}]},
+
+ '8_0':{lbl:'8:0–8:11',dm:[
+   {id:'DM1',name:'Insertar clavijas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,null,[null,18],[19,19],[20,21],[22,23],[24,25],[25,26],[26,27],[28,30],[30,33],[32,35],[34,36],[37,40],[41,46],[47,null]])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,null,[null,19],[20,21],[22,23],[24,25],[25,26],[26,27],[28,30],[30,33],[32,35],[34,36],[37,40],[41,46],[47,null]])}},
+   {id:'DM2',name:'Entretejer cordel',   t:mktbl([null,null,null,null,null,null,[29,null],[25,28],[20,24],[16,19],[11,15],[8,10],[7,7],[5,6],[4,4],[3,3],[2,2],[1,1],[null,0]])},
+   {id:'DM3',name:'Dibujar al trazado',  t:mktbl([null,null,null,null,null,null,null,[4,null],[3,3],[2,2],[2,2],[1,1],[0,0],null,null,null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar con dos manos', t:mktbl([null,null,null,null,null,null,[10,null],[9,9],[9,9],[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0],null])},
+   {id:'PA2',name:'Lanzar saquito a diana',t:mktbl([null,null,null,null,null,null,[5,null],[5,5],[4,4],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio soporte',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,[28,30],[22,27],[18,21],[14,17],[11,13],[7,10],[5,6],[3,4],[2,2],[1,1],[0,0],null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,[28,30],[22,27],[18,21],[14,17],[11,13],[7,10],[5,6],[3,4],[2,2],[1,1],[0,0],null,null])}},
+   {id:'E2',name:'Andar talón-punta',    t:mktbl([null,null,null,null,null,null,null,[29,30],[24,28],[19,23],[14,18],[10,13],[7,9],[4,6],[2,3],[1,1],[0,0],null,null])},
+   {id:'E3',name:'Saltar pata coja',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}}]},
+
+ '9_0':{lbl:'9:0–9:11',dm:[
+   {id:'DM1',name:'Insertar clavijas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,null,[null,18],null,[19,20],[21,22],[22,24],[25,26],[26,28],[29,30],[31,34],[32,36],[37,40],[38,40],[41,null],null])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,null,null,[null,18],[19,20],[21,22],[22,24],[25,26],[26,28],[29,30],[31,34],[32,36],[37,40],[38,40],[41,null]])}},
+   {id:'DM2',name:'Entretejer cordel',   t:mktbl([null,null,null,null,null,null,[30,null],[25,29],[22,24],[17,21],[14,16],[12,13],[9,11],[6,8],[4,5],[2,3],[1,1],[0,0],null])},
+   {id:'DM3',name:'Dibujar al trazado',  t:mktbl([null,null,null,null,null,null,null,[3,null],[2,2],[2,2],[1,1],[0,0],null,null,null,null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar con dos manos', t:mktbl([null,null,null,null,null,null,[10,null],[9,9],[9,9],[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[1,2],[0,0],null,null])},
+   {id:'PA2',name:'Lanzar saquito a diana',t:mktbl([null,null,null,null,null,null,[5,null],[5,5],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio soporte',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,[29,30],[24,28],[20,23],[16,19],[12,15],[8,11],[6,7],[4,5],[2,3],[1,1],[0,0],null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,[29,30],[24,28],[20,23],[16,19],[12,15],[8,11],[6,7],[4,5],[2,3],[1,1],[0,0],null,null])}},
+   {id:'E2',name:'Andar talón-punta',    t:mktbl([null,null,null,null,null,null,null,[30,null],[26,29],[22,25],[18,21],[13,17],[9,12],[6,8],[4,5],[2,3],[1,1],[0,0],null])},
+   {id:'E3',name:'Saltar pata coja',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,null,null,[4,null],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,null,null,null,[4,null],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}}]},
+
+ '10_0':{lbl:'10:0–10:11',dm:[
+   {id:'DM1',name:'Insertar clavijas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,[null,17],[18,19],[20,20],[21,22],[23,24],[25,26],[27,28],[29,30],[30,32],[32,34],[34,37],[37,39],[39,null],null,null])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,[null,16],[17,19],[20,20],[21,22],[23,24],[25,26],[27,28],[29,30],[30,32],[32,34],[34,37],[37,39],[39,null],null])}},
+   {id:'DM2',name:'Entretejer cordel',   t:mktbl([null,null,null,null,null,null,[27,null],[22,26],[20,21],[16,19],[12,15],[10,11],[7,9],[5,6],[3,4],[2,2],[1,1],[0,0],null])},
+   {id:'DM3',name:'Dibujar al trazado',  t:mktbl([null,null,null,null,null,null,null,[3,null],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar con dos manos', t:mktbl([null,null,null,null,null,null,[10,null],[9,9],[9,9],[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[1,2],[0,0],null,null])},
+   {id:'PA2',name:'Lanzar saquito a diana',t:mktbl([null,null,null,null,null,null,[5,null],[5,5],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio soporte',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,[29,30],[26,28],[22,24],[19,21],[14,16],[11,13],[8,10],[5,7],[3,4],[1,2],[0,0],null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,[29,30],[26,28],[22,24],[19,21],[14,16],[11,13],[8,10],[5,7],[3,4],[1,2],[0,0],null,null])}},
+   {id:'E2',name:'Andar talón-punta',    t:mktbl([null,null,null,null,null,null,null,[30,null],[27,29],[23,26],[18,22],[14,17],[9,13],[5,8],[3,4],[1,2],[0,0],null,null])},
+   {id:'E3',name:'Saltar pata coja',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,null,null,[4,null],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,null,null,null,[4,null],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}}]},
+
+ '11_0':{lbl:'11:0–11:11',dm:[
+   {id:'DM1',name:'Voltear clavijas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,[null,13],[14,14],[14,16],[16,17],[18,19],[18,21],[20,24],[22,25],[24,26],[26,28],[28,29],[29,31],[32,34],[34,36],null,null])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,[null,15],null,[16,17],[18,18],[19,20],[21,22],[22,24],[25,27],[26,28],[27,29],[29,31],[31,34],[34,36],[36,null],null,null])}},
+   {id:'DM2',name:'Montar triángulo',    t:mktbl([null,null,null,null,null,null,[40,null],[36,39],[27,30],[23,26],[19,22],[14,18],[11,13],[7,10],[5,6],[3,4],[2,2],[1,1],[null,0]])},
+   {id:'DM3',name:'Dibujar el trazado',  t:mktbl([null,null,null,null,null,null,[9,null],[7,8],[5,6],[4,4],[2,3],[1,1],[0,0],null,null,null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar pelota (mejor mano)',t:mktbl([null,null,null,null,null,null,[10,null],[9,9],[8,8],[7,7],[5,6],[3,4],[2,2],[1,1],[0,0],null,null,null,null])},
+   {id:'PA2',name:'Atrapar pelota (otra mano)', t:mktbl([null,null,null,null,null,null,[10,null],[9,9],[7,8],[5,6],[4,4],[2,3],[1,1],[0,0],null,null,null,null,null])},
+   {id:'PA3',name:'Lanzar a una diana',         t:mktbl([null,null,null,null,null,null,[5,null],[4,4],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio dos soportes',t:mktbl([null,null,null,null,null,null,[30,null],[28,29],[25,27],[22,24],[17,19],[14,16],[11,13],[8,10],[5,7],[2,4],[1,1],[0,0],null])},
+   {id:'E2',name:'Andar talón-punta',     t:mktbl([null,null,null,null,null,null,null,[29,30],[27,28],[25,26],[20,22],[12,14],[9,11],[5,8],[4,4],[1,2],[0,0],null,null])},
+   {id:'E3',name:'Saltar pata coja zigzag',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null])}}]},
+
+ '12_0':{lbl:'12:0–12:11',dm:[
+   {id:'DM1',name:'Voltear clavijas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,[null,13],[14,14],[16,17],[17,19],[19,20],[20,21],[22,24],[23,25],[25,27],[27,28],[28,30],[30,32],[32,35],[35,37],[38,null]])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,[null,14],null,[16,17],[19,20],[20,22],[22,24],[24,26],[26,28],[28,30],[30,33],[33,36],[36,null],null,null])}},
+   {id:'DM2',name:'Montar triángulo',   t:mktbl([null,null,null,null,null,null,[30,null],[25,29],[20,24],[16,19],[12,15],[9,11],[7,8],[5,6],[3,4],[2,2],[1,1],[0,0],null])},
+   {id:'DM3',name:'Dibujar el trazado', t:mktbl([null,null,null,null,null,null,[8,null],[7,7],[5,6],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar pelota (mejor mano)',t:mktbl([null,null,null,null,null,null,[10,null],[9,9],[9,9],[8,8],[7,7],[5,6],[4,4],[3,3],[2,2],[1,1],[0,0],null,null])},
+   {id:'PA2',name:'Atrapar pelota (otra mano)', t:mktbl([null,null,null,null,null,null,[10,null],[9,9],[8,8],[7,7],[5,6],[3,4],[2,2],[1,1],[0,0],null,null,null,null])},
+   {id:'PA3',name:'Lanzar a una diana',         t:mktbl([null,null,null,null,null,null,[5,null],[4,4],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio dos soportes',t:mktbl([null,null,null,null,null,null,[30,null],[29,30],[26,28],[23,25],[18,20],[13,16],[9,12],[6,8],[3,5],[1,2],[0,0],null,null])},
+   {id:'E2',name:'Andar talón-punta',     t:mktbl([null,null,null,null,null,null,null,[29,30],[27,28],[24,26],[19,23],[15,18],[9,13],[5,8],[3,4],[1,2],[0,0],null,null])},
+   {id:'E3',name:'Saltar pata coja zigzag',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}}]},
+
+ '13_0':{lbl:'13:0–13:11',dm:[
+   {id:'DM1',name:'Voltear clavijas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,[null,13],null,null,[17,18],[19,20],[21,22],[22,24],[24,26],[26,28],[28,30],[30,33],[33,36],[37,null],null,null])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,[null,14],null,null,[18,19],[20,21],[22,24],[24,26],[26,29],[29,32],[33,36],[37,null],null,null,null])}},
+   {id:'DM2',name:'Montar triángulo',   t:mktbl([null,null,null,null,null,null,[27,null],[23,26],[19,22],[15,18],[11,14],[7,10],[5,6],[3,4],[2,2],[1,1],[0,0],null,null])},
+   {id:'DM3',name:'Dibujar el trazado', t:mktbl([null,null,null,null,null,null,[9,null],[7,8],[5,6],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar pelota (mejor mano)',t:mktbl([null,null,null,null,null,[10,null],[10,10],[9,9],[8,8],[7,7],[6,6],[4,5],[3,3],[2,2],[1,1],[0,0],null,null,null])},
+   {id:'PA2',name:'Atrapar pelota (otra mano)', t:mktbl([null,null,null,null,null,null,[10,null],[9,9],[7,8],[6,6],[4,5],[3,3],[2,2],[1,1],[0,0],null,null,null,null])},
+   {id:'PA3',name:'Lanzar a una diana',         t:mktbl([null,null,null,null,null,null,[5,null],[4,4],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio dos soportes',t:mktbl([null,null,null,null,null,null,[30,null],[28,30],[25,27],[21,24],[17,19],[13,15],[10,11],[7,9],[5,6],[3,4],[1,2],[0,0],null])},
+   {id:'E2',name:'Andar talón-punta',     t:mktbl([null,null,null,null,null,null,null,[30,null],[27,29],[24,26],[19,23],[15,18],[10,13],[6,9],[4,5],[2,3],[1,1],[0,0],null])},
+   {id:'E3',name:'Saltar pata coja zigzag',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}}]},
+
+ '14_0':{lbl:'14:0–14:11',dm:[
+   {id:'DM1',name:'Voltear clavijas',dual:true,
+    sA:{n:'mano preferida',t:mktbl([null,null,null,null,null,[null,12],[14,14],[15,15],[16,16],[17,17],[18,18],[19,19],[20,20],[21,21],[22,22],[23,23],[24,24],[25,25],[26,null]])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,[null,13],[15,15],[16,16],[17,17],[18,18],[19,19],[20,20],[21,22],[23,23],[24,24],[25,25],[26,27],[28,28],[30,null]])}},
+   {id:'DM2',name:'Montar triángulo',t:mktbl([null,null,null,null,null,null,[null,17],[19,23],[24,28],[29,34],[35,39],[40,44],[45,49],[50,54],[55,59],[60,64],[65,69],[70,75],[76,79],[81,null]])},
+   {id:'DM3',name:'Dibujar el trazado',t:mktbl([null,null,null,null,null,null,null,null,null,null,null,null,null,[0,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6],[8,null]])}],
+  pa:[
+   {id:'PA1',name:'Atrapar pelota (mejor mano)',t:mktbl([null,null,null,null,null,null,null,null,null,null,null,[10,10],[9,9],[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0]])},
+   {id:'PA2',name:'Atrapar pelota (otra mano)',t:mktbl([null,null,null,null,null,null,null,[10,10],[9,9],[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null])},
+   {id:'PA3',name:'Lanzar a una diana',t:mktbl([null,null,null,null,null,null,null,null,null,[10,10],[9,9],[8,8],[7,7],[6,6],[5,5],[4,4],[3,3],[2,2],[1,1],[0,0],null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio dos soportes',t:mktbl([null,null,null,null,null,null,null,null,null,null,[30,30],[28,29],[25,27],[23,24],[20,22],[18,19],[15,17],[13,14],[10,12],[7,9],[5,6],[0,4]])},
+   {id:'E2',name:'Andar talón-punta',t:mktbl([null,null,null,null,null,null,null,null,null,null,null,null,[15,15],[14,14],[13,13],[12,12],[11,11],[10,10],[9,9],[8,8],[7,7],[6,6],[0,5]])},
+   {id:'E3',name:'Saltar pata coja zigzag',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,null,null,null,null,[5,5],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])},
+    sB:{n:'otra pierna',t:mktbl([null,null,null,null,null,null,null,null,null,null,null,[5,5],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}}]},
+
+ '15_0':{lbl:'15:0–15:11',dm:[
+   {id:'DM1',name:'Voltear clavijas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,null,[null,13],[12,13],[14,15],[15,16],[17,19],[19,21],[20,22],[21,24],[22,25],[23,27],[25,28],[27,30],[28,32],[33,null]])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,null,null,null,[18,21],[19,22],[21,24],[22,25],[24,27],[25,28],[26,29],[28,32],[32,36],null,null])}},
+   {id:'DM2',name:'Montar triángulo',   t:mktbl([null,null,null,null,null,null,[22,null],[18,21],[16,17],[13,15],[10,12],[8,9],[6,7],[4,5],[2,3],[1,1],[0,0],null,null])},
+   {id:'DM3',name:'Dibujar el trazado', t:mktbl([null,null,null,null,null,null,[8,null],[7,7],[5,6],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar pelota (mejor mano)',t:mktbl([null,null,null,null,null,[10,null],[10,10],[9,9],[8,8],[7,7],[6,6],[4,5],[3,3],[2,2],[1,1],[0,0],null,null,null])},
+   {id:'PA2',name:'Atrapar pelota (otra mano)', t:mktbl([null,null,null,null,null,null,[10,null],[9,9],[8,8],[6,7],[4,5],[3,3],[2,2],[1,1],[0,0],null,null,null,null])},
+   {id:'PA3',name:'Lanzar a una diana',         t:mktbl([null,null,null,null,null,null,[5,null],[4,4],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio dos soportes',t:mktbl([null,null,null,null,null,null,[30,null],[28,30],[25,27],[22,24],[19,21],[14,16],[9,11],[6,8],[5,5],[3,4],[1,2],[0,0],null])},
+   {id:'E2',name:'Andar talón-punta',     t:mktbl([null,null,null,null,null,null,null,[30,null],[28,29],[25,27],[21,24],[17,20],[12,16],[9,11],[7,8],[4,6],[2,3],[0,1],null])},
+   {id:'E3',name:'Saltar pata coja zigzag',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}}]},
+
+ '16_0':{lbl:'16:0–16:11',dm:[
+   {id:'DM1',name:'Voltear clavijas',dual:true,
+    sA:{n:'mano preferida',   t:mktbl([null,null,null,null,null,[null,11],[null,13],[14,14],[16,17],[17,18],[19,20],[20,21],[21,22],[22,24],[24,25],[25,27],[27,30],[30,32],[33,null]])},
+    sB:{n:'mano no preferida',t:mktbl([null,null,null,null,null,null,[null,13],null,null,[19,null],[20,22],[22,25],[25,27],[27,30],[30,33],[33,null],null,null,null])}},
+   {id:'DM2',name:'Montar triángulo',   t:mktbl([null,null,null,null,null,null,[24,null],[20,23],[16,19],[14,15],[11,13],[8,10],[7,7],[5,6],[3,4],[2,2],[1,1],[0,0],null])},
+   {id:'DM3',name:'Dibujar el trazado', t:mktbl([null,null,null,null,null,null,[8,null],[7,7],[5,6],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}],
+  pa:[
+   {id:'PA1',name:'Atrapar pelota (mejor mano)',t:mktbl([null,null,null,null,null,[10,null],[10,10],[9,9],[8,8],[7,7],[6,6],[4,5],[3,3],[2,2],[1,1],[0,0],null,null,null])},
+   {id:'PA2',name:'Atrapar pelota (otra mano)', t:mktbl([null,null,null,null,null,null,[10,null],[9,9],[8,8],[6,7],[4,5],[3,3],[2,2],[1,1],[0,0],null,null,null,null])},
+   {id:'PA3',name:'Lanzar a una diana',         t:mktbl([null,null,null,null,null,null,[5,null],[4,4],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null,null])}],
+  e:[
+   {id:'E1',name:'Equilibrio dos soportes',t:mktbl([null,null,null,null,null,null,[30,null],[28,30],[25,27],[23,24],[19,22],[14,18],[10,13],[7,9],[5,6],[3,4],[1,2],[0,0],null])},
+   {id:'E2',name:'Andar talón-punta',     t:mktbl([null,null,null,null,null,null,null,[30,null],[28,29],[25,27],[21,24],[17,20],[12,16],[9,11],[7,8],[4,6],[2,3],[0,1],null])},
+   {id:'E3',name:'Saltar pata coja zigzag',dual:true,
+    sA:{n:'mejor pierna',t:mktbl([null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])},
+    sB:{n:'otra pierna', t:mktbl([null,null,null,null,null,null,null,null,[5,null],[4,4],[3,3],[2,2],[1,1],[0,0],null,null,null,null,null])}}]}
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let CG=null;          // current age group key
+const PEVAL={};       // PEVAL[item.id] = computed PE for that item
+
+function ageGroup(y,m){
+  const t=y*12+m;
+  if(t>=48&&t<=53)return'4_0'; if(t>=54&&t<=59)return'4_6';
+  if(t>=60&&t<=71)return'5_0'; if(t>=72&&t<=83)return'6_0';
+  if(t>=84&&t<=95)return'7_0'; if(t>=96&&t<=107)return'8_0';
+  if(t>=108&&t<=119)return'9_0'; if(t>=120&&t<=131)return'10_0';
+  if(t>=132&&t<=143)return'11_0'; if(t>=144&&t<=155)return'12_0';
+  if(t>=156&&t<=167)return'13_0'; if(t>=168&&t<=179)return'14_0';
+  if(t>=180&&t<=191)return'15_0'; if(t>=192&&t<=203)return'16_0';
+  return null;
+}
+
+function rangoEdadLabel(gk){
+  if(!gk)return'Rango de edad';
+  const y=parseInt(gk,10);
+  if(y>=4&&y<=6)return'Rango de edad 1 (4-6 años)';
+  if(y>=7&&y<=10)return'Rango de edad 2 (7-10 años)';
+  if(y>=11&&y<=16)return'Rango de edad 3 (11-16 años)';
+  return'Rango de edad';
+}
+function onAge(){
+  const y=parseInt(document.getElementById('ay').value)||0;
+  const m=parseInt(document.getElementById('am').value)||0;
+  const tag=document.getElementById('atag');
+  const titleEl=document.getElementById('rango-edad-title');
+  if(!y){tag.textContent='— Introduce la edad para cargar las pruebas —';titleEl.textContent='Rango de edad';return;}
+  const gk=ageGroup(y,m);
+  if(!gk){tag.textContent='Edad fuera de rango (4:0–16:11)';titleEl.textContent='Rango de edad';return;}
+  if(gk===CG)return;
+  CG=gk; tag.textContent=B[gk].lbl; titleEl.textContent=rangoEdadLabel(gk.split('_')[0]);
+  buildTable();
+}
+
+// ── BUILD TABLE ────────────────────────────────────────────────────────────
+function buildTable(){
+  const g=B[CG], tb=document.getElementById('tbody');
+  for(const k in PEVAL) delete PEVAL[k];
+  tb.innerHTML='';
+
+  const dims=[
+    {k:'dm',lbl:'DM',title:'Destreza Manual',items:g.dm},
+    {k:'pa',lbl:'PA',title:'Puntería y Atrape',items:g.pa},
+    {k:'e', lbl:'E', title:'Equilibrio',items:g.e}
+  ];
+
+  dims.forEach(dim=>{
+    // ── Separator row ──
+    const sep=document.createElement('tr');
+    sep.className='dim-sep';
+    sep.innerHTML=`<td colspan="4">${dim.title}</td>`;
+    tb.appendChild(sep);
+
+    const last=dim.items.length-1;
+    dim.items.forEach((item,idx)=>{
+      const isLast=(idx===last);
+
+      if(item.dual){
+        // Row A
+        addRow(tb, item, isLast, false,
+          item.id+'<sup style="font-size:8px">*</sup>',
+          `<div class="pname">${item.name}</div><div class="psub">${item.sA.n}</div>`,
+          `pd_${item.id}_a`,
+          `pe_${item.id}_a`,
+          dim.k
+        );
+        // Row B
+        addRow(tb, item, false, false,
+          '',
+          `<div class="psub" style="font-size:11.5px">${item.sB.n}</div>`,
+          `pd_${item.id}_b`,
+          `pe_${item.id}_b`,
+          dim.k
+        );
+        // Combined
+        const rc=document.createElement('tr');
+        rc.className='comb-row'+(isLast?' last-dim':'');
+        rc.innerHTML=`
+          <td class="dim-lbl" style="font-size:9px">÷2</td>
+          <td class="prueba comb-hint">Suma ÷ 2 (redondeado al alza si >10, a la baja si <10)</td>
+          <td class="td-pd"></td>
+          <td class="td-pe"><div class="oval is-comb" id="ov_${item.id}">—</div></td>`;
+        tb.appendChild(rc);
+
+      } else {
+        addRow(tb, item, isLast, true,
+          item.id,
+          `<div class="pname">${item.name}</div>`,
+          `pd_${item.id}`,
+          `ov_${item.id}`,
+          dim.k
+        );
+      }
+    });
+  });
+
+  clearCards();
+}
+
+function addRow(tb,item,isLast,simple,dimHtml,pruHtml,pdId,peId,dimK){
+  const r=document.createElement('tr');
+  r.className='data-row'+(isLast?' last-dim':'');
+  const onip=simple
+    ? `onInput_simple('${item.id}','${dimK}')`
+    : `onInput_dual('${item.id}','${dimK}')`;
+  const peCell=simple
+    ? `<div class="oval" id="${peId}">—</div>`
+    : `<input class="ipd" type="number" id="${peId}" readonly placeholder="—">`;
+  r.innerHTML=`
+    <td class="dim-lbl">${dimHtml}</td>
+    <td class="prueba">${pruHtml}</td>
+    <td class="td-pd"><input class="ipd" type="number" id="${pdId}" min="0" placeholder="—" oninput="${onip}"></td>
+    <td class="td-pe">${peCell}</td>`;
+  tb.appendChild(r);
+}
+
+// ── INPUT HANDLERS ─────────────────────────────────────────────────────────
+function onInput_simple(id,dimK){
+  const g=B[CG];
+  const item=[...g.dm,...g.pa,...g.e].find(x=>x.id===id);
+  if(!item)return;
+  const pd=parseFloat(document.getElementById(`pd_${id}`)?.value);
+  const pe=isNaN(pd)?null:lookup(item.t,pd);
+  const ov=document.getElementById(`ov_${id}`);
+  if(pe!==null){PEVAL[id]=pe; setOval(ov,pe,true);}
+  else{delete PEVAL[id]; setOval(ov,'—',false);}
+  recalcDim(dimK);
+}
+
+function onInput_dual(id,dimK){
+  const g=B[CG];
+  const item=[...g.dm,...g.pa,...g.e].find(x=>x.id===id);
+  if(!item)return;
+  const pdA=parseFloat(document.getElementById(`pd_${id}_a`)?.value);
+  const pdB=parseFloat(document.getElementById(`pd_${id}_b`)?.value);
+  const peA=isNaN(pdA)?null:lookup(item.sA.t,pdA);
+  const peB=isNaN(pdB)?null:lookup(item.sB.t,pdB);
+  // Show individual PEs in readonly inputs
+  const eA=document.getElementById(`pe_${id}_a`); if(eA)eA.value=peA??'';
+  const eB=document.getElementById(`pe_${id}_b`); if(eB)eB.value=peB??'';
+  // Combined
+  const ov=document.getElementById(`ov_${id}`);
+  if(peA!==null&&peB!==null){
+    const c=combRound((peA+peB)/2);
+    PEVAL[id]=c; setOval(ov,c,true);
+  } else { delete PEVAL[id]; setOval(ov,'—',false); }
+  recalcDim(dimK);
+}
+
+function recalcDim(dimK){
+  if(!CG)return;
+  const g=B[CG];
+  const items=dimK==='dm'?g.dm:dimK==='pa'?g.pa:g.e;
+  let sum=0,ok=true;
+  for(const it of items){ if(PEVAL[it.id]===undefined){ok=false;break;} sum+=PEVAL[it.id]; }
+
+  const sumEl=document.getElementById(`sum_${dimK}`);
+  const sovEl=document.getElementById(`sov_${dimK}`);
+  const pcEl=document.getElementById(`pc_${dimK}`);
+
+  if(ok){
+    if(sumEl){sumEl.value=sum; sumEl.classList.add('auto');}
+    const r=lookupT2(sum,dimK);
+    setOval(sovEl,r?r.pe:'?',!!r);
+    setPc(pcEl,r?r.pc:'?',!!r);
+  } else {
+    if(sumEl){sumEl.value=''; sumEl.classList.remove('auto');}
+    setOval(sovEl,'—',false); setPc(pcEl,'—',false);
+  }
+  recalcTotal();
+}
+
+function recalcTotal(){
+  if(!CG)return;
+  const g=B[CG];
+  let tot=0,ok=true;
+  for(const it of[...g.dm,...g.pa,...g.e]){ if(PEVAL[it.id]===undefined){ok=false;break;} tot+=PEVAL[it.id]; }
+  const tEl=document.getElementById('total_pts');
+  const sovEl=document.getElementById('sov_total');
+  const pcEl=document.getElementById('pc_total');
+  if(ok){
+    if(tEl)tEl.value=tot;
+    const r=lookupT3(tot);
+    setOval(sovEl,r?r.pe:'?',!!r);
+    if(pcEl)pcEl.value=r?r.pc:'';
+  } else {
+    if(tEl)tEl.value='';
+    setOval(sovEl,'—',false);
+    if(pcEl)pcEl.value='';
+  }
+}
+
+function recalcAllFromInputs(){
+  if(!CG)return;
+  const g=B[CG];
+  const dims=[{k:'dm',items:g.dm},{k:'pa',items:g.pa},{k:'e',items:g.e}];
+  dims.forEach(({k,items})=>{
+    items.forEach(it=>{
+      if(it.dual){
+        const vA=document.getElementById(`pd_${it.id}_a`)?.value, vB=document.getElementById(`pd_${it.id}_b`)?.value;
+        if(vA!==undefined||vB!==undefined) onInput_dual(it.id,k);
+      } else {
+        const v=document.getElementById(`pd_${it.id}`)?.value;
+        if(v!==undefined) onInput_simple(it.id,k);
+      }
+    });
+  });
+}
+
+// ── DISPLAY HELPERS ────────────────────────────────────────────────────────
+function setOval(el,val,filled){
+  if(!el)return;
+  el.textContent=val;
+  el.classList.toggle('has-val',filled);
+  el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),320);
+}
+function setPc(el,val,filled){
+  if(!el)return;
+  el.textContent=val;
+  el.classList.toggle('has-val',filled);
+  el.classList.add('pop'); setTimeout(()=>el.classList.remove('pop'),320);
+}
+
+function clearCards(){
+  ['sum_dm','sum_pa','sum_e'].forEach(id=>{
+    const e=document.getElementById(id); if(e){e.value='';e.classList.remove('auto');}
+  });
+  ['sov_dm','sov_pa','sov_e','sov_total'].forEach(id=>setOval(document.getElementById(id),'—',false));
+  ['pc_dm','pc_pa','pc_e'].forEach(id=>setPc(document.getElementById(id),'—',false));
+  ['total_pts','pc_total'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+}
+
+function resetAll(){
+  if(!confirm('¿Limpiar todos los datos?'))return;
+  document.querySelectorAll('input.ipd').forEach(e=>e.value='');
+  document.querySelectorAll('.oval').forEach(e=>{e.textContent='—';e.classList.remove('has-val');});
+  for(const k in PEVAL)delete PEVAL[k];
+  clearCards();
+  ['apellidos','nombre','centro','evaluado_por','curso','fe_dia','fe_mes','fe_ano','fn_dia','fn_mes','fn_ano'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.querySelectorAll('input[name="sexo"],input[name="mano"],input[name="lista_obs"]').forEach(r=>{r.checked=false;});
+  const ay=document.getElementById('ay'),am=document.getElementById('am');
+  if(ay)ay.value='';if(am)am.value='';
+  CG=null; document.getElementById('rango-edad-title').textContent='Rango de edad';
+  document.getElementById('atag').textContent='— Introduce la edad para cargar las pruebas —';
+  const tbody=document.getElementById('tbody');if(tbody){tbody.innerHTML='';tbody.appendChild(document.createElement('tr')).appendChild(document.createElement('td')).appendChild(document.createTextNode('Introduce la edad del niño para cargar las pruebas')).parentElement.colSpan=4;}
+}
+
+function exportJSON(){
+  if(!CG){alert('Introduce primero la edad del niño');return;}
+  const g=B[CG];
+  const col=items=>items.map(it=>{
+    if(it.dual)return{id:it.id,nombre:it.name,
+      [it.sA.n]:{pd:document.getElementById(`pd_${it.id}_a`)?.value||null,pe:document.getElementById(`pe_${it.id}_a`)?.value||null},
+      [it.sB.n]:{pd:document.getElementById(`pd_${it.id}_b`)?.value||null,pe:document.getElementById(`pe_${it.id}_b`)?.value||null},
+      pe_combinada:PEVAL[it.id]??null};
+    return{id:it.id,nombre:it.name,
+      pd:document.getElementById(`pd_${it.id}`)?.value||null,
+      pe:PEVAL[it.id]??null};
+  });
+  const preguntasExport=(PREGUNTAS_CARGADAS||FALLBACK_PREGUNTAS).map(x=>({id:x.id,label:x.label}));
+  const d={
+    prueba:'MABC-2',fecha:new Date().toISOString().split('T')[0],
+    preguntas:preguntasExport,
+    identificacion:{
+      apellidos:document.getElementById('apellidos')?.value||'',
+      nombre:document.getElementById('nombre')?.value||'',
+      centro:document.getElementById('centro')?.value||'',
+      evaluado_por:document.getElementById('evaluado_por')?.value||'',
+      sexo:document.querySelector('input[name="sexo"]:checked')?.value||null,
+      curso:document.getElementById('curso')?.value||'',
+      mano_preferida:document.querySelector('input[name="mano"]:checked')?.value||null,
+      fecha_evaluacion:{dia:document.getElementById('fe_dia')?.value,mes:document.getElementById('fe_mes')?.value,ano:document.getElementById('fe_ano')?.value},
+      fecha_nacimiento:{dia:document.getElementById('fn_dia')?.value,mes:document.getElementById('fn_mes')?.value,ano:document.getElementById('fn_ano')?.value},
+      lista_observacion_completada:document.querySelector('input[name="lista_obs"]:checked')?.value||null
+    },
+    edad:{anos:document.getElementById('ay').value,meses:document.getElementById('am').value,grupo:B[CG].lbl},
+    DM:{pruebas:col(g.dm),suma_dim:document.getElementById('sum_dm')?.value,pe_escalar:document.getElementById('sov_dm')?.textContent,percentil:document.getElementById('pc_dm')?.textContent},
+    PA:{pruebas:col(g.pa),suma_dim:document.getElementById('sum_pa')?.value,pe_escalar:document.getElementById('sov_pa')?.textContent,percentil:document.getElementById('pc_pa')?.textContent},
+    E:{pruebas:col(g.e),suma_dim:document.getElementById('sum_e')?.value,pe_escalar:document.getElementById('sov_e')?.textContent,percentil:document.getElementById('pc_e')?.textContent},
+    total:{puntuacion:document.getElementById('total_pts')?.value,pe_escalar:document.getElementById('sov_total')?.textContent,percentil:document.getElementById('pc_total')?.value}
+  };
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}));
+  a.download=`mabc2_${d.fecha}.json`; a.click();
+}
+
+// ── PLATAFORMA: datos del alumno desde Emotti (varias fuentes como en C. Sensoriomotor) ──
+function getEmottiStudent(){
+  const ctx=window.EMOOTI_CONTEXT||window.__EMOOTI_CTX__||{};
+  let student=ctx.student||(ctx.students&&ctx.students[0]);
+  if(!student){
+    let emotiStudentData=window.emotiStudentData;
+    if(!Array.isArray(emotiStudentData)&&emotiStudentData&&emotiStudentData.students)
+      emotiStudentData=emotiStudentData.students;
+    if(Array.isArray(emotiStudentData)&&emotiStudentData.length)student=emotiStudentData[0];
+    else if(emotiStudentData&&!Array.isArray(emotiStudentData))student=emotiStudentData;
+  }
+  return student||null;
+}
+function parseBirthDate(birthDate){
+  if(!birthDate)return null;
+  var birth;
+  if(typeof birthDate==='string'&&birthDate.includes('/')){
+    const parts=birthDate.split('/').map(Number);
+    if(parts.length>=3)birth=new Date(parts[2],parts[1]-1,parts[0]);
+    else birth=new Date(birthDate);
+  }else birth=new Date(birthDate);
+  return isNaN(birth.getTime())?null:birth;
+}
+function applyPlatformContext(){
+  const student=getEmottiStudent();
+  const infoEl=document.getElementById('student-info');
+  const nameEl=document.getElementById('student-name');
+  const dateEl=document.getElementById('student-date');
+  const ageEl=document.getElementById('student-age');
+  if(!student||!infoEl){return;}
+  infoEl.classList.add('visible');
+  const fullName=student.full_name||student.name||[student.first_name,student.last_name].filter(Boolean).join(' ')||'—';
+  nameEl.textContent=fullName;
+  dateEl.textContent=new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'});
+  let anos=null,meses=null;
+  const birth=parseBirthDate(student.birth_date);
+  if(birth){
+    const today=new Date();
+    let m=(today.getFullYear()-birth.getFullYear())*12+(today.getMonth()-birth.getMonth());
+    if(today.getDate()<birth.getDate())m--;
+    m=Math.max(0,Math.min(m,12*16+11));
+    anos=Math.floor(m/12); meses=m%12;
+  }
+  if(student.age_years!=null||student.age_months!=null){
+    if(student.age_months!=null){
+      const totalM=Number(student.age_months);
+      anos=Math.floor(totalM/12); meses=totalM%12;
+    }else{
+      anos=Number(student.age_years); meses=meses!=null?meses:0;
+    }
+  }
+  if(anos!=null){
+    if(ageEl)ageEl.textContent=anos+' años'+(meses!=null&&meses>0?' '+meses+' meses':'');
+    const ay=document.getElementById('ay'),am=document.getElementById('am');
+    if(ay){ay.value=anos;ay.readOnly=true;}
+    if(am){am.value=meses!=null?meses:0;am.readOnly=true;}
+    if(typeof onAge==='function')onAge();
+  }else{if(ageEl)ageEl.textContent='—';}
+  if(birth){
+    const fd=document.getElementById('fn_dia'),fm=document.getElementById('fn_mes'),fa=document.getElementById('fn_ano');
+    if(fd){fd.value=birth.getDate();fd.readOnly=true;}
+    if(fm){fm.value=birth.getMonth()+1;fm.readOnly=true;}
+    if(fa){fa.value=birth.getFullYear();fa.readOnly=true;}
+  }
+  const today=new Date();
+  const feD=document.getElementById('fe_dia'),feM=document.getElementById('fe_mes'),feA=document.getElementById('fe_ano');
+  if(feD){feD.value=today.getDate();}
+  if(feM){feM.value=today.getMonth()+1;}
+  if(feA){feA.value=today.getFullYear();}
+  var nombre=document.getElementById('nombre');
+  var apellidos=document.getElementById('apellidos');
+  const apellidosVal=student.last_name||student.apellidos||student.apellido||'';
+  if(apellidos&&apellidosVal){apellidos.value=apellidosVal;apellidos.readOnly=true;}
+  const nombreVal=student.first_name||student.nombre||(student.full_name&&!apellidosVal?student.full_name:null)||(student.full_name?student.full_name.split(/\s+/)[0]:null)||student.full_name||student.name||[student.first_name,student.last_name].filter(Boolean).join(' ');
+  if(nombre&&nombreVal){nombre.value=nombreVal;nombre.readOnly=true;}
+  const sexoVal=(student.gender||student.sexo||student.genero||'').toString().toLowerCase();
+  const sexoMap={male:'varon',female:'mujer',m:'varon',f:'mujer',varon:'varon',mujer:'mujer',hombre:'varon'};
+  const sexoRadio=sexoMap[sexoVal]||(sexoVal.includes('varon')||sexoVal.includes('hombre')||sexoVal.includes('male')?'varon':sexoVal.includes('mujer')||sexoVal.includes('female')?'mujer':null);
+  if(sexoRadio){
+    const r=document.querySelector('input[name="sexo"][value="'+sexoRadio+'"]');
+    if(r)r.checked=true;
+  }
+  const cursoVal=student.curso||student.course||student.grade||student.grado||'';
+  const cursoEl=document.getElementById('curso');
+  if(cursoEl&&cursoVal){cursoEl.value=cursoVal;cursoEl.readOnly=true;}
+}
+
+// Reintentos para que Emotti inyecte datos después de cargar (emotiStudentData / __EMOOTI_CTX__)
+function scheduleEmottiRetries(){
+  var attempts=0, maxAttempts=10;
+  var t=setInterval(function(){
+    attempts++;
+    if(getEmottiStudent()){ applyPlatformContext(); clearInterval(t); return; }
+    if(attempts>=maxAttempts)clearInterval(t);
+  },500);
+}
+// Cargar preguntas desde mabc2_baremos.json (hoja_registro.preguntas) al iniciar
+loadPreguntasFromJSON();
+setTimeout(applyPlatformContext,100);
+setTimeout(applyPlatformContext,500);
+setTimeout(applyPlatformContext,1500);
+scheduleEmottiRetries();
+window.addEventListener('message',function(e){ if(e.data&&(e.data.type==='EMOOTI_CONTEXT_READY'||e.data.type==='emoti_data_ready')) applyPlatformContext(); });
+window.applyPlatformContext=applyPlatformContext;
+</script>
+</body>
+</html>
